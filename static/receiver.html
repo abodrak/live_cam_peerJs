@@ -1,0 +1,96 @@
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>receiver</title>
+</head>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/0.3.16/peer.min.js"></script>
+
+
+
+
+<body>
+
+  <style>
+    html,
+    body {
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+
+    video {
+
+      width: 500px;
+      height: 200px;
+      z-index: -100;
+      background-size: cover;
+      overflow: hidden;
+    }
+
+    .video_view {
+      position: absolute;
+      width: 300px;
+      height: 300px;
+      top: 20vh;
+      left: 30vw;
+
+    }
+  </style>
+
+  <div class="video_view">
+    <div> <video controls autoplay playsinline></video>
+    </div class="video_control">
+  </div>
+
+
+  <script>
+
+
+    var video = document.querySelector('video');
+
+
+    navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: false
+      }).then(function (stream) {
+        console.log('stream from receiver started ! ')
+
+        const peer = new Peer('receiver', { host: '172.19.4.87', port: 9000, path: '/' })
+
+        peer.on('call',function(call){
+
+          call.answer(stream)
+          call.on('stream',function(remoteStream){
+            console.log('remote stream from sender received !')
+            video.srcObject = remoteStream 
+
+          })
+
+
+
+
+        })
+
+
+
+      })
+
+
+
+
+
+//     peer.on('connection', (conn) => {
+//   conn.on('data', (data) => {
+//     console.log(data);
+//   })
+// })
+
+
+
+  </script>
+
+
+</body>
+
+</html>

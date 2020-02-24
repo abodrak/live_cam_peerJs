@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>send test</title>
+</head>
+
+<body>
+
+    <style>
+        html,
+        body {
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        video {
+
+            width: 500px;
+            height: 200px;
+            z-index: -100;
+            background-size: cover;
+            overflow: hidden;
+        }
+        .video_view{
+            position: absolute; 
+            width: 300px;
+            height: 300px;
+            top:20vh;
+            left: 30vw;
+
+        }
+        
+    </style>
+
+
+    <br>
+
+
+    <div class="video_view">
+        <div> <video controls autoplay playsinline></video>
+        </div class="video_control">
+        <button id="btn-start-recording">Start Recording</button>
+        <button id="btn-stop-recording" disabled>Stop Recording</button>
+    </div>
+
+    <script src="/RecordRTC.js"></script>
+    <script>
+        var video = document.querySelector('video');
+
+        function captureCamera(callback) {
+            navigator.mediaDevices.getUserMedia({ audio: true, video: true }).then(function (camera) {
+                callback(camera);
+            }).catch(function (error) {
+                alert('Unable to capture your camera. Please check console logs.');
+                console.error(error);
+            });
+        }
+
+        function stopRecordingCallback() {
+            video.src = video.srcObject = null;
+            video.muted = false;
+            video.volume = 1;
+            video.src = URL.createObjectURL(recorder.getBlob());
+            console.log(recorder.getBlob())
+
+            recorder.camera.stop();
+            recorder.destroy();
+            recorder = null;
+        }
+
+        var recorder; // globally accessible
+
+        document.getElementById('btn-start-recording').onclick = function () {
+            this.disabled = true;
+            captureCamera(function (camera) {
+                video.muted = true;
+                video.volume = 0;
+                video.srcObject = camera;
+
+                recorder = RecordRTC(camera, {
+                    type: 'video'
+                });
+
+                recorder.startRecording();
+
+                // release camera on stopRecording
+                recorder.camera = camera;
+
+                document.getElementById('btn-stop-recording').disabled = false;
+            });
+        };
+
+        document.getElementById('btn-stop-recording').onclick = function () {
+            this.disabled = true;
+            recorder.stopRecording(stopRecordingCallback);
+        };
+    </script>
+
+    <footer style="margin-top: 20px;"><small id="send-message"></small></footer>
+    <script src="https://www.webrtc-experiment.com/common.js"></script>
+
+</body>
+
+</html>

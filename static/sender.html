@@ -1,0 +1,100 @@
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>sender</title>
+</head>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/0.3.16/peer.min.js"></script>
+
+
+
+
+<body>
+
+  <style>
+    html,
+    body {
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+
+    video {
+
+      width: 500px;
+      height: 200px;
+      z-index: -100;
+      background-size: cover;
+      overflow: hidden;
+    }
+
+    .video_view {
+      position: absolute;
+      width: 300px;
+      height: 300px;
+      top: 20vh;
+      left: 30vw;
+
+    }
+  </style>
+
+  <h1>test </h1>
+  <div class="video_view">
+    <div> <video controls autoplay playsinline></video>
+    </div class="video_control">
+    <button id="btn-start">Start</button>
+  </div>
+
+
+  <script>
+
+    var video = document.querySelector('video');
+
+
+    document.getElementById('btn-start').onclick = function () {
+      navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: false
+      }).then(function (stream) {
+        console.log('stream from sender started ! ')
+
+
+
+        const peer = new Peer('sender', { host: '172.19.4.87', port: 9000, path: '/' })
+
+
+        var call = peer.call('receiver',stream)
+
+        call.on('stream',function(remoteStream){
+          console.log(remoteStream);
+          video.srcObject = remoteStream 
+
+        })
+        
+
+
+
+
+      })
+
+
+    };
+
+    // const conn = peer.connect('receiver')
+
+
+    // conn.on('open', () => {
+    //   console.log('connection opened with receiver !')
+    //   conn.send('hi how are you doing!')
+    // })
+
+
+
+
+
+  </script>
+
+
+</body>
+
+</html>
