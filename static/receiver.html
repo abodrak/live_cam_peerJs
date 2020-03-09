@@ -56,7 +56,7 @@
       }).then(function (stream) {
         console.log('stream from receiver started ! ')
 
-        const peer = new Peer('receiver', { host: '172.19.4.87', port: 9000, path: '/' })
+        const peer = new Peer('receiver', { host: 'yourhostName', port: 9000, path: '/' })
 
         peer.on('call',function(call){
 
